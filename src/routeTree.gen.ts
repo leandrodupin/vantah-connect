@@ -17,6 +17,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
 import { Route as AuthenticatedDashboardCadastroRouteImport } from './routes/_authenticated/dashboard.cadastro'
 import { Route as AuthenticatedDashboardComprarRouteImport } from './routes/_authenticated/dashboard.comprar'
+import { Route as AuthenticatedDashboardComprasRouteImport } from './routes/_authenticated/dashboard.compras'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -60,6 +61,12 @@ const AuthenticatedDashboardComprarRoute =
     path: '/comprar',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
+const AuthenticatedDashboardComprasRoute =
+  AuthenticatedDashboardComprasRouteImport.update({
+    id: '/compras',
+    path: '/compras',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -68,6 +75,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/dashboard/cadastro': typeof AuthenticatedDashboardCadastroRoute
   '/dashboard/comprar': typeof AuthenticatedDashboardComprarRoute
+  '/dashboard/compras': typeof AuthenticatedDashboardComprasRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRoutesByTo {
@@ -76,6 +84,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminRoute
   '/dashboard/cadastro': typeof AuthenticatedDashboardCadastroRoute
   '/dashboard/comprar': typeof AuthenticatedDashboardComprarRoute
+  '/dashboard/compras': typeof AuthenticatedDashboardComprasRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRoutesById {
@@ -87,6 +96,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/_authenticated/dashboard/cadastro': typeof AuthenticatedDashboardCadastroRoute
   '/_authenticated/dashboard/comprar': typeof AuthenticatedDashboardComprarRoute
+  '/_authenticated/dashboard/compras': typeof AuthenticatedDashboardComprasRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRouteTypes {
@@ -98,6 +108,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/dashboard/cadastro'
     | '/dashboard/comprar'
+    | '/dashboard/compras'
     | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -106,6 +117,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/dashboard/cadastro'
     | '/dashboard/comprar'
+    | '/dashboard/compras'
     | '/dashboard'
   id:
     | '__root__'
@@ -116,6 +128,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/dashboard/cadastro'
     | '/_authenticated/dashboard/comprar'
+    | '/_authenticated/dashboard/compras'
     | '/_authenticated/dashboard/'
   fileRoutesById: FileRoutesById
 }
@@ -183,12 +196,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardComprarRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
+    '/_authenticated/dashboard/compras': {
+      id: '/_authenticated/dashboard/compras'
+      path: '/compras'
+      fullPath: '/dashboard/compras'
+      preLoaderRoute: typeof AuthenticatedDashboardComprasRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
   }
 }
 
 interface AuthenticatedDashboardRouteChildren {
   AuthenticatedDashboardCadastroRoute: typeof AuthenticatedDashboardCadastroRoute
   AuthenticatedDashboardComprarRoute: typeof AuthenticatedDashboardComprarRoute
+  AuthenticatedDashboardComprasRoute: typeof AuthenticatedDashboardComprasRoute
   AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
 }
 
@@ -196,6 +217,7 @@ const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
   {
     AuthenticatedDashboardCadastroRoute: AuthenticatedDashboardCadastroRoute,
     AuthenticatedDashboardComprarRoute: AuthenticatedDashboardComprarRoute,
+    AuthenticatedDashboardComprasRoute: AuthenticatedDashboardComprasRoute,
     AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
   }
 
