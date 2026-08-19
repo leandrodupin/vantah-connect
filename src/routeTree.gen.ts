@@ -16,6 +16,7 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
 import { Route as AuthenticatedDashboardCadastroRouteImport } from './routes/_authenticated/dashboard.cadastro'
+import { Route as AuthenticatedDashboardComprarRouteImport } from './routes/_authenticated/dashboard.comprar'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -53,6 +54,12 @@ const AuthenticatedDashboardCadastroRoute =
     path: '/cadastro',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
+const AuthenticatedDashboardComprarRoute =
+  AuthenticatedDashboardComprarRouteImport.update({
+    id: '/comprar',
+    path: '/comprar',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -60,6 +67,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/dashboard/cadastro': typeof AuthenticatedDashboardCadastroRoute
+  '/dashboard/comprar': typeof AuthenticatedDashboardComprarRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRoutesByTo {
@@ -67,6 +75,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/dashboard/cadastro': typeof AuthenticatedDashboardCadastroRoute
+  '/dashboard/comprar': typeof AuthenticatedDashboardComprarRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRoutesById {
@@ -77,6 +86,7 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/_authenticated/dashboard/cadastro': typeof AuthenticatedDashboardCadastroRoute
+  '/_authenticated/dashboard/comprar': typeof AuthenticatedDashboardComprarRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRouteTypes {
@@ -87,9 +97,16 @@ export interface FileRouteTypes {
     | '/admin'
     | '/dashboard'
     | '/dashboard/cadastro'
+    | '/dashboard/comprar'
     | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/admin' | '/dashboard/cadastro' | '/dashboard'
+  to:
+    | '/'
+    | '/auth'
+    | '/admin'
+    | '/dashboard/cadastro'
+    | '/dashboard/comprar'
+    | '/dashboard'
   id:
     | '__root__'
     | '/'
@@ -98,6 +115,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/dashboard'
     | '/_authenticated/dashboard/cadastro'
+    | '/_authenticated/dashboard/comprar'
     | '/_authenticated/dashboard/'
   fileRoutesById: FileRoutesById
 }
@@ -158,17 +176,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardCadastroRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
+    '/_authenticated/dashboard/comprar': {
+      id: '/_authenticated/dashboard/comprar'
+      path: '/comprar'
+      fullPath: '/dashboard/comprar'
+      preLoaderRoute: typeof AuthenticatedDashboardComprarRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
   }
 }
 
 interface AuthenticatedDashboardRouteChildren {
   AuthenticatedDashboardCadastroRoute: typeof AuthenticatedDashboardCadastroRoute
+  AuthenticatedDashboardComprarRoute: typeof AuthenticatedDashboardComprarRoute
   AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
 }
 
 const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
   {
     AuthenticatedDashboardCadastroRoute: AuthenticatedDashboardCadastroRoute,
+    AuthenticatedDashboardComprarRoute: AuthenticatedDashboardComprarRoute,
     AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
   }
 
