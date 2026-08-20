@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Loader2 } from "lucide-react";
+import { Loader2, Plus, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -33,9 +33,13 @@ type Product = {
   is_active: boolean;
 };
 
+const emptyDraft = { name: "", description: "", price: "" };
+
 function AdminProduto() {
   const [products, setProducts] = useState<Product[]>([]);
   const [savingId, setSavingId] = useState<string | null>(null);
+  const [draft, setDraft] = useState(emptyDraft);
+  const [creating, setCreating] = useState(false);
 
   const refresh = useCallback(async () => {
     const { data } = await supabase
@@ -71,12 +75,89 @@ function AdminProduto() {
     toast.success("Produto atualizado.");
   };
 
+  const handleCreate = async () => {
+    if (draft.name.trim().length < 2) {
+      toast.error("Informe o nome do produto.");
+      return;
+    }
+    setCreating(true);
+    const { error } = await supabase.from("products").insert({
+      name: draft.name.trim(),
+      description: draft.description.trim() || null,
+      price: Number(draft.price) || 0,
+      is_active: true,
+    });
+    setCreating(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    setDraft(emptyDraft);
+    toast.success("Produto cadastrado.");
+    void refresh();
+  };
+
+  const handleDelete = async (product: Product) => {
+    if (!window.confirm(`Excluir o produto "${product.name}"?`)) return;
+    const { error } = await supabase.from("products").delete().eq("id", product.id);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Produto excluído.");
+    void refresh();
+  };
+
   return (
     <div>
       <h1 className="text-3xl font-bold">Produtos</h1>
       <p className="mt-2 text-muted-foreground">
-        Edite as informações comerciais dos produtos vendidos.
+        Cadastre novos produtos e edite as informações comerciais dos existentes.
       </p>
+
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          void handleCreate();
+        }}
+        className="card-elevated mt-8 grid gap-4 p-6 md:grid-cols-2"
+      >
+        <h2 className="md:col-span-2 text-lg font-semibold">Novo produto</h2>
+        <div className="space-y-2">
+          <Label htmlFor="new-name">Nome</Label>
+          <Input
+            id="new-name"
+            value={draft.name}
+            onChange={(event) => setDraft((d) => ({ ...d, name: event.target.value }))}
+            placeholder="Ex.: Cartão de Visita Virtual"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="new-price">Preço (R$)</Label>
+          <Input
+            id="new-price"
+            type="number"
+            step="0.01"
+            value={draft.price}
+            onChange={(event) => setDraft((d) => ({ ...d, price: event.target.value }))}
+            placeholder="49.90"
+          />
+        </div>
+        <div className="space-y-2 md:col-span-2">
+          <Label htmlFor="new-desc">Descrição</Label>
+          <Textarea
+            id="new-desc"
+            rows={3}
+            value={draft.description}
+            onChange={(event) => setDraft((d) => ({ ...d, description: event.target.value }))}
+          />
+        </div>
+        <div className="md:col-span-2">
+          <Button type="submit" variant="hero" disabled={creating}>
+            {creating ? <Loader2 className="animate-spin" /> : <Plus />} Cadastrar produto
+          </Button>
+        </div>
+      </form>
 
       <div className="mt-8 space-y-6">
         {products.map((product) => (
@@ -131,6 +212,13 @@ function AdminProduto() {
               <Button type="submit" variant="hero" disabled={savingId === product.id}>
                 {savingId === product.id ? <Loader2 className="animate-spin" /> : null} Salvar
                 produto
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => void handleDelete(product)}
+              >
+                <Trash2 /> Excluir
               </Button>
             </div>
           </form>

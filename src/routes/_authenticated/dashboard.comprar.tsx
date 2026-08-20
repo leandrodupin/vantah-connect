@@ -29,6 +29,7 @@ type Product = { id: string; name: string; description: string | null; price: nu
 function ComprarPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [payingId, setPayingId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const checkout = useServerFn(createCheckoutPreference);
 
   useEffect(() => {
@@ -37,7 +38,11 @@ function ComprarPage() {
       .select("id, name, description, price")
       .eq("is_active", true)
       .order("created_at")
-      .then(({ data }) => setProducts((data as Product[]) ?? []));
+      .then(({ data }) => {
+        const list = (data as Product[]) ?? [];
+        setProducts(list);
+        setSelectedId((current) => current ?? list[0]?.id ?? null);
+      });
   }, []);
 
   const handleBuy = async (product: Product) => {
@@ -62,9 +67,21 @@ function ComprarPage() {
 
       <div className="mt-8 grid gap-6 md:grid-cols-2">
         {products.map((product) => (
-          <div key={product.id} className="card-elevated p-6">
+          <div
+            key={product.id}
+            role="button"
+            tabIndex={0}
+            onClick={() => setSelectedId(product.id)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") setSelectedId(product.id);
+            }}
+            className={`card-elevated cursor-pointer p-6 text-left transition ${
+              selectedId === product.id ? "ring-2 ring-primary" : "opacity-80 hover:opacity-100"
+            }`}
+          >
             <span className="inline-flex items-center gap-2 text-xs text-muted-foreground">
-              <ShoppingBag className="size-3.5 text-primary" /> Produto
+              <ShoppingBag className="size-3.5 text-primary" />{" "}
+              {selectedId === product.id ? "Selecionado" : "Produto"}
             </span>
             <h2 className="mt-2 text-2xl font-semibold">{product.name}</h2>
             <p className="mt-2 text-sm text-muted-foreground">{product.description}</p>
@@ -73,7 +90,11 @@ function ComprarPage() {
               variant="hero"
               size="lg"
               className="mt-6 w-full sm:w-auto"
-              onClick={() => handleBuy(product)}
+              onClick={(event) => {
+                event.stopPropagation();
+                setSelectedId(product.id);
+                void handleBuy(product);
+              }}
               disabled={payingId === product.id}
             >
               {payingId === product.id ? <Loader2 className="animate-spin" /> : <CreditCard />}{" "}
