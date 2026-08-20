@@ -67,9 +67,17 @@ function ComprarPage() {
 
       <div className="mt-8 grid gap-6 md:grid-cols-2">
         {products.map((product) => (
-          <div key={product.id} className="card-elevated p-6">
+          <button
+            type="button"
+            key={product.id}
+            onClick={() => setSelectedId(product.id)}
+            className={`card-elevated p-6 text-left transition ${
+              selectedId === product.id ? "ring-2 ring-primary" : "opacity-80 hover:opacity-100"
+            }`}
+          >
             <span className="inline-flex items-center gap-2 text-xs text-muted-foreground">
-              <ShoppingBag className="size-3.5 text-primary" /> Produto
+              <ShoppingBag className="size-3.5 text-primary" />{" "}
+              {selectedId === product.id ? "Selecionado" : "Produto"}
             </span>
             <h2 className="mt-2 text-2xl font-semibold">{product.name}</h2>
             <p className="mt-2 text-sm text-muted-foreground">{product.description}</p>
