@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Loader2, Sparkles } from "lucide-react";
+import { Check, Loader2, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
+import { AVATAR_OPTIONS, randomAvatar } from "@/lib/avatars";
 
 type AuthSearch = { mode: "login" | "signup" };
 
@@ -33,6 +34,12 @@ export const Route = createFileRoute("/auth")({
   component: AuthPage,
 });
 
+// Permite entrar com usuário simples (sem @) usando um e-mail interno determinístico.
+export function toLoginEmail(identifier: string) {
+  const value = identifier.trim().toLowerCase();
+  return value.includes("@") ? value : `${value.replace(/[^a-z0-9._-]/g, "")}@vantah.local`;
+}
+
 async function routeAfterLogin(userId: string) {
   const { data } = await supabase
     .from("user_roles")
@@ -49,13 +56,14 @@ function AuthPage() {
   const [tab, setTab] = useState<AuthSearch["mode"]>(mode);
   const [loading, setLoading] = useState(false);
 
-  const [loginForm, setLoginForm] = useState({ email: "", password: "" });
+  const [loginForm, setLoginForm] = useState({ identifier: "", password: "" });
   const [signupForm, setSignupForm] = useState({
     fullName: "",
     email: "",
     whatsapp: "",
     password: "",
   });
+  const [avatar, setAvatar] = useState(() => randomAvatar());
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data }) => {
@@ -68,7 +76,10 @@ function AuthPage() {
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
     setLoading(true);
-    const { data, error } = await supabase.auth.signInWithPassword(loginForm);
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: toLoginEmail(loginForm.identifier),
+      password: loginForm.password,
+    });
     setLoading(false);
     if (error) {
       toast.error(error.message);
@@ -87,7 +98,11 @@ function AuthPage() {
       password: signupForm.password,
       options: {
         emailRedirectTo: `${window.location.origin}/dashboard`,
-        data: { full_name: signupForm.fullName, whatsapp: signupForm.whatsapp },
+        data: {
+          full_name: signupForm.fullName,
+          whatsapp: signupForm.whatsapp,
+          avatar_url: avatar,
+        },
       },
     });
     setLoading(false);
@@ -125,13 +140,14 @@ function AuthPage() {
             <TabsContent value="login" className="mt-6">
               <form onSubmit={handleLogin} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="login-email">E-mail</Label>
+                  <Label htmlFor="login-id">E-mail ou usuário</Label>
                   <Input
-                    id="login-email"
-                    type="email"
+                    id="login-id"
                     required
-                    value={loginForm.email}
-                    onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
+                    autoComplete="username"
+                    placeholder="voce@email.com ou seu usuário"
+                    value={loginForm.identifier}
+                    onChange={(e) => setLoginForm({ ...loginForm, identifier: e.target.value })}
                   />
                 </div>
                 <div className="space-y-2">
@@ -140,6 +156,7 @@ function AuthPage() {
                     id="login-password"
                     type="password"
                     required
+                    autoComplete="current-password"
                     value={loginForm.password}
                     onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
                   />
@@ -152,6 +169,28 @@ function AuthPage() {
 
             <TabsContent value="signup" className="mt-6">
               <form onSubmit={handleSignup} className="space-y-4">
+                <div className="space-y-3">
+                  <Label>Escolha seu avatar</Label>
+                  <div className="flex flex-wrap gap-2">
+                    {AVATAR_OPTIONS.map((url) => (
+                      <button
+                        key={url}
+                        type="button"
+                        onClick={() => setAvatar(url)}
+                        className={`relative size-12 overflow-hidden rounded-full border-2 transition-colors ${
+                          avatar === url ? "border-primary" : "border-border"
+                        }`}
+                      >
+                        <img src={url} alt="Opção de avatar" className="size-full object-cover" />
+                        {avatar === url ? (
+                          <span className="bg-brand absolute bottom-0 right-0 flex size-4 items-center justify-center rounded-full text-primary-foreground">
+                            <Check className="size-2.5" />
+                          </span>
+                        ) : null}
+                      </button>
+                    ))}
+                  </div>
+                </div>
                 <div className="space-y-2">
                   <Label htmlFor="signup-name">Nome completo</Label>
                   <Input
