@@ -86,13 +86,17 @@ function ComprarPage() {
               variant="hero"
               size="lg"
               className="mt-6 w-full sm:w-auto"
-              onClick={() => handleBuy(product)}
+              onClick={(event) => {
+                event.stopPropagation();
+                setSelectedId(product.id);
+                void handleBuy(product);
+              }}
               disabled={payingId === product.id}
             >
               {payingId === product.id ? <Loader2 className="animate-spin" /> : <CreditCard />}{" "}
               Pagar com Mercado Pago
             </Button>
-          </div>
+          </button>
         ))}
         {products.length === 0 ? (
           <p className="text-sm text-muted-foreground">Nenhum produto disponível no momento.</p>
