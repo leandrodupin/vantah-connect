@@ -29,6 +29,7 @@ type Product = { id: string; name: string; description: string | null; price: nu
 function ComprarPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [payingId, setPayingId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const checkout = useServerFn(createCheckoutPreference);
 
   useEffect(() => {
@@ -37,7 +38,11 @@ function ComprarPage() {
       .select("id, name, description, price")
       .eq("is_active", true)
       .order("created_at")
-      .then(({ data }) => setProducts((data as Product[]) ?? []));
+      .then(({ data }) => {
+        const list = (data as Product[]) ?? [];
+        setProducts(list);
+        setSelectedId((current) => current ?? list[0]?.id ?? null);
+      });
   }, []);
 
   const handleBuy = async (product: Product) => {
