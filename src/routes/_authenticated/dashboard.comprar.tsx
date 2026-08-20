@@ -100,7 +100,7 @@ function ComprarPage() {
               {payingId === product.id ? <Loader2 className="animate-spin" /> : <CreditCard />}{" "}
               Pagar com Mercado Pago
             </Button>
-          </button>
+          </div>
         ))}
         {products.length === 0 ? (
           <p className="text-sm text-muted-foreground">Nenhum produto disponível no momento.</p>
