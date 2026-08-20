@@ -67,11 +67,15 @@ function ComprarPage() {
 
       <div className="mt-8 grid gap-6 md:grid-cols-2">
         {products.map((product) => (
-          <button
-            type="button"
+          <div
             key={product.id}
+            role="button"
+            tabIndex={0}
             onClick={() => setSelectedId(product.id)}
-            className={`card-elevated p-6 text-left transition ${
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") setSelectedId(product.id);
+            }}
+            className={`card-elevated cursor-pointer p-6 text-left transition ${
               selectedId === product.id ? "ring-2 ring-primary" : "opacity-80 hover:opacity-100"
             }`}
           >
