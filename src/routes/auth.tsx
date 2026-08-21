@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
+import { logAccess } from "@/lib/access-log";
 import { AVATAR_OPTIONS, randomAvatar } from "@/lib/avatars";
 
 type AuthSearch = { mode: "login" | "signup" };
