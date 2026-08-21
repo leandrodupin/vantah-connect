@@ -13,6 +13,7 @@ const adminLinks = [
   { to: "/admin/clientes", label: "Clientes" },
   { to: "/admin/produto", label: "Produto" },
   { to: "/admin/vendas", label: "Vendas" },
+  { to: "/admin/acessos", label: "Acessos" },
 ] as const;
 
 const clientLinks = [
