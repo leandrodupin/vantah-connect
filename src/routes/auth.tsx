@@ -87,6 +87,7 @@ function AuthPage() {
       return;
     }
     toast.success("Bem-vindo de volta!");
+    await logAccess(data.user.id);
     const target = await routeAfterLogin(data.user.id);
     navigate({ to: target, replace: true });
   };
@@ -117,6 +118,7 @@ function AuthPage() {
       return;
     }
     toast.success("Conta criada com sucesso!");
+    await logAccess(data.session.user.id);
     navigate({ to: "/dashboard", replace: true });
   };
 
